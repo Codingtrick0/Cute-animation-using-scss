@@ -1,0 +1,60 @@
+$n : 3; /* number of rows/columns */
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat($n,auto);
+  position: relative;
+  cursor: pointer;
+}
+.gallery > img,
+.gallery::after{
+  width: 180px; /* control the size */
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+.gallery::after {
+  content: "";
+  position: absolute;
+  outline: 10px solid #FF6B6B;
+  box-shadow: 0 0 0 200vmax #000a;
+  transform: translate(-50vw,100%);
+  transition: .4s cubic-bezier(.5,-0.45,.5,1.45);
+  pointer-events: none;
+}
+@for $i from 1 to ($n * $n + 1) {
+  .gallery:has(img:nth-of-type(#{$i}):hover)::after {
+    transform: translate(((($i - 1)%$n))*100%,(floor(($i - 0.001) / $n))*100%);
+   }
+}
+.gallery:has(img:nth-of-type(odd):hover)::after {
+  outline-color: #C7F464;
+ }
+
+
+/* for people that will scream  ":has() is not supported everywhere !!" */
+@supports not (selector(:has(*))) {
+  .gallery::after {
+    display: none;
+  }
+  .gallery > img {
+    filter: grayscale(80%);
+    transition: .3s;
+    outline: 10px solid #0000;
+  }
+  .gallery > img:hover {
+    filter: grayscale(0%);
+    outline-color: #FF6B6B;
+    z-index: 1;
+  }
+  .gallery > img:nth-child(odd):hover {
+    outline-color: #C7F464;
+  }
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  background: #556270;
+}
